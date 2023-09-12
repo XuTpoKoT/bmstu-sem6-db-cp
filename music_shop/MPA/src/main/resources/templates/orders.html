@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/main.css}" />
+</head>
+<body>
+  <th:block th:include="/_header"></th:block>
+  <th:block th:include="/_menu"></th:block>
+
+  <div class="page-title">Мои заказы</div>
+  <table border="1" style="width:100%">
+
+    <tr>
+      <th>Номер заказа</th>
+      <th>Дата</th>
+      <th>Точка доставки</th>
+      <th>Имя Заказчика</th>
+      <th>Статус</th>
+      <th>Стоимость</th>
+      <th>Оплачено бонусами</th>
+    </tr>
+    <tr th:each="order : ${orders}">
+      <td th:utext="${order.getId()}"></td>
+      <td th:utext="${#temporals.format(order.getDate(),'dd-MM-yyyy HH:mm')}"></td>
+      <td th:utext="${order.getDeliveryPoint().getAddress()}"></td>
+      <td th:utext="${order.getCustomerLogin()}"></td>
+      <td th:utext="${order.getStatus().getName()}"></td>
+      <td th:utext="${order.getInitialCost()}"></td>
+      <td th:utext="${order.getPaidByBonuses()}"></td>
+    </tr>
+  </table>
+
+  <nav style="display:inline" th:if="${countPages > 1}">
+    <th:block th:each="pageNumber : ${pageNumbers}">
+      <a th:if="${pageNumber==currentPage}" style="color: blueviolet" th:href="@{/orders(pageNumber=${pageNumber})}"
+         class="nav-item" th:utext="${pageNumber}"></a>
+      <a th:if="${pageNumber!=currentPage}" th:href="@{/orders(pageNumber=${pageNumber})}"
+         class="nav-item" th:utext="${pageNumber}"></a>
+    </th:block>
+    <span th:if="${needDots}" th:text="..."></span>
+    <a th:if="${needLastPage}" th:href="@{/orders(pageNumber=${countPages})}"
+       class="nav-item" th:utext="${countPages}"></a>
+  </nav>
+
+</body>
+</html>

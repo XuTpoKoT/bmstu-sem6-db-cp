@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/styles/main.css}" />
+</head>
+<body xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+  <th:block th:include="/_header"></th:block>
+  <th:block th:include="/_menu"></th:block>
+
+  <div sec:authorize="hasAuthority('CUSTOMER')">
+    <p th:text="'Логин: ' + ${user.getLogin()}"></p>
+    <p th:text="'Имя: ' + ${user.getFirstName()}"></p>
+    <p th:text="'Фамилия: ' + ${user.getLastName()}"></p>
+    <p th:text="'Почта: ' + ${user.getEmail()}"></p>
+    <p th:text="'Бонусов на карте: ' + ${user.getCard().getBonuses()}"></p>
+  </div>
+  <div sec:authorize="hasAuthority('EMPLOYEE')">
+    <p th:text="'Логин: ' + ${user.getLogin()}"></p>
+  </div>
+
+</body>
+</html>

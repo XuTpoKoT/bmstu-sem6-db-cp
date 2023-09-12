@@ -1,0 +1,15 @@
+db:
+  url:
+    "jdbc:postgresql://localhost:5432/musicshop_db"
+  username:
+    "postgres"
+  password:
+    "postgres"
+server:
+  port: 8090
+spring:
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled:
+          true

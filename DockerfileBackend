@@ -1,0 +1,12 @@
+FROM openjdk:20
+# ARG JAR_FILE=music_shop/TechUI/build/libs/TechUI-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE=TechUI-0.0.1-SNAPSHOT.jar
+ENV DB_URL=example
+ENV DB_USERNAME=postgres
+ENV DB_PASSWORD=postgres
+ENV DB_NAME=musicshop_db
+ENV DB_HOST=localhost
+ENV DB_PORT=5432
+ENV APP_PORT=8080
+COPY ${JAR_FILE} /opt/app.jar
+ENTRYPOINT ["java", "-Ddb.password=${DB_PASSWORD}", "-Ddb.username=${DB_USERNAME}", "-Ddb.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}", "-Dserver.port=${APP_PORT}", "-jar", "/opt/app.jar"]

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Music Shop Online</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/styles/main.css}" />
+
+<!--    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>-->
+</head>
+<body>
+    <th:block th:include="/_header"></th:block>
+    <th:block th:include="/_menu"></th:block>
+
+    <div class="product-preview-container" th:each="product : ${products}">
+        <ul>
+            <li><img class="product-image"
+                     src="https://kombik.com/resources/img/000/001/822/img_182276.jpg" /></li>
+            <li>
+                <a th:href="@{/products/{id}(id=${product.getId()})}" th:utext="${product.getName()}"></a>
+            </li>
+            <li><span th:utext="${product.getPrice()}"></span></li>
+            <li>
+                <form class="form-signin" action="/cart" method="post">
+                    <input type="hidden" id="productId" name="productId" th:value="${product.getId()}">
+                    <button class="btn btn-lg btn-primary btn-block" type="submit">В корзину</button>
+                </form>
+            </li>
+        </ul>
+    </div>
+
+    <br/>
+    <nav style="display:inline" th:if="${countPages > 1}">
+        <th:block th:each="pageNumber : ${pageNumbers}">
+            <a th:if="${pageNumber==currentPage}" style="color: blueviolet" th:href="@{/(pageNumber=${pageNumber})}"
+               class="nav-item" th:utext="${pageNumber}"></a>
+            <a th:if="${pageNumber!=currentPage}" th:href="@{/(pageNumber=${pageNumber})}"
+               class="nav-item" th:utext="${pageNumber}"></a>
+        </th:block>
+        <span th:if="${needDots}" th:text="..."></span>
+        <a th:if="${needLastPage}" th:href="@{/(pageNumber=${countPages})}"
+           class="nav-item" th:utext="${countPages}"></a>
+    </nav>
+
+</body>
+</html>

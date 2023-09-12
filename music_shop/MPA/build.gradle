@@ -1,0 +1,14 @@
+plugins {
+}
+
+ext['spring-security.version']='6.0.6'
+dependencies {
+    implementation project(':BL')
+    implementation project(':DB')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6:3.1.2.RELEASE'
+}
+
+description = 'MPA'

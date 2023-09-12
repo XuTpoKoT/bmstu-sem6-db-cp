@@ -1,0 +1,30 @@
+services:
+  backend:
+    container_name: backend
+    depends_on:
+      -   postgres
+    ports:
+      - "${APP_PORT}:${APP_PORT}"
+    build:
+      context: .
+      dockerfile: "DockerfileBackend"
+    environment:
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: postgres
+      DB_PORT: ${DB_PORT}
+      APP_PORT: ${APP_PORT}
+  postgres:
+    build:
+      context: .
+      dockerfile: "DockerfileDB"
+    container_name: postgres
+    environment:
+      POSTGRES_DB: "musicshop_db"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"    
+    volumes:
+      - /home/dmitriy/bmstu/music-shop:/mnt
+    ports:
+      - "${DB_PORT}:${DB_PORT}"

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/styles/main.css}" />
+  <link rel="stylesheet" type="text/css" th:href="@{/styles/cart.css}" />
+</head>
+<body xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <th:block th:include="/_header"></th:block>
+  <th:block th:include="/_menu"></th:block>
+
+  <div class="basket" th:if="${not productsInCart.isEmpty()}">
+    <div class="basket-labels">
+      <ul>
+        <li class="item item-heading">Товар</li>
+        <li class="price">Цена за шт.</li>
+        <li class="quantity">Кол-во</li>
+      </ul>
+    </div>
+
+    <div th:each="cartItem : ${productsInCart}">
+      <div class="basket-product">
+        <div class="item">
+          <div class="product-image">
+            <img src="https://kombik.com/resources/img/000/001/822/img_182276.jpg"
+                 alt="Изображение не найдено" class="product-frame">
+          </div>
+          <div class="product-details">
+            <span th:utext="${cartItem.getKey().getName()}"></span>
+          </div>
+        </div>
+        <div class="price">
+          <span th:utext="${cartItem.getKey().getPrice()}"></span>
+        </div>
+        <div class="quantity">
+          <form action="/cart" th:method="put">
+            <input type="hidden" name="productId" th:value="${cartItem.getKey().getId()}">
+            <input type="number" id="cnt" name="cnt" th:value="${cartItem.getValue()}" min="1" class="quantity-field">
+            <input type="submit" value="Изменить">
+          </form>
+        </div>
+        <div class="remove">
+          <form class="form-signin" action="/cart" th:method="delete">
+            <input type="hidden" id="productId" name="productId" th:value="${cartItem.getKey().getId()}">
+            <button class="btn btn-lg btn-primary btn-block" type="submit">Удалить</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside th:if="${not productsInCart.isEmpty()}">
+    <div class="summary">
+      <div class="summary-total-items"><span class="total-items"></span>Точка доставки</div>
+      <div class="summary-checkout">
+        <form class="form-signin" action="/orders" method="post">
+          <div class="summary-delivery">
+            <select th:name="deliveryPointId" class="summary-delivery-selection" >
+              <option th:value="${dp.getId()}" th:text="${dp.getAddress()}" th:each="dp : ${deliveryPoints}"></option>
+            </select>
+          </div>
+          <div class="form-inline">
+            <input type="checkbox" name="needSpendBonuses"/>
+            <label for="customer">Снять бонусы</label>
+          </div>
+
+          <div sec:authorize="hasAuthority('EMPLOYEE')">
+            <label for="customer">Логин заказчика</label>
+            <input type="text" id="customer" name="customer">
+          </div>
+          <button class="checkout-cta" type="submit">Оформить</button>
+        </form>
+        <div th:if="${param.errorMessage}" class="error-message">
+          <span th:text="${param.errorMessage}"></span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <span th:if="${productsInCart.isEmpty()}">Корзина пуста</span>
+
+</body>
+</html>

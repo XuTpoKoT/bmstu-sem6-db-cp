@@ -1,0 +1,3 @@
+FROM postgres:13.3
+
+ADD ./music_shop/DB/src/main/resources/scheme.sql /docker-entrypoint-initdb.d
