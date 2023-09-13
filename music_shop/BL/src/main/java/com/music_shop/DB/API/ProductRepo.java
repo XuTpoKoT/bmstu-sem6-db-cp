@@ -14,4 +14,5 @@ public interface ProductRepo {
     List<Product> getProductsBySkipAndLimit(int skip, int limit);
 
     int getCountProducts();
+    void saveProduct(Product product);
 }

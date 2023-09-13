@@ -37,6 +37,7 @@ public class AuthController {
                                 Model model) {
         System.out.println("registration");
         try {
+            System.out.println(password);
             authService.registration(login, password);
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());

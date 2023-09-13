@@ -11,16 +11,12 @@ import org.postgresql.Driver;
 
 @Configuration
 public class DBConfig {
-    //@Value("#{systemProperties['db.url']}")
     @Value("${db.url}")
     private String PG_DB_URL;
-    //@Value("#{systemProperties['db.username']}")
     @Value("${db.username}")
     private String PG_DB_USERNAME;
-    //@Value("#{systemProperties['db.password']}")
     @Value("${db.password}")
     private String PG_DB_PASSWORD;
-
 
     @Bean
     public DataSource dataSource() {

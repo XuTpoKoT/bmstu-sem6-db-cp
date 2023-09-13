@@ -1,5 +1,7 @@
 package com.music_shop.DB.jdbc.mapper;
 
+import com.music_shop.BL.model.DeliveryPoint;
+import com.music_shop.BL.model.Manufacturer;
 import com.music_shop.BL.model.Product;
 import org.json.JSONObject;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,7 +24,8 @@ public class ProductMapper implements RowMapper<Product> {
         int price = rs.getInt("price");
         String description = rs.getString("description");
         String color = rs.getString("color");
-        String manufacturer = rs.getString("mname");
+        int stogageCnt = rs.getInt("storage_cnt");
+        String imgRef = rs.getString("img_ref");
 
         String characteristicsStr  = rs.getString("characteristics");
         Map<String, String> characteristicsMap = new HashMap<>();
@@ -33,9 +36,11 @@ public class ProductMapper implements RowMapper<Product> {
                 characteristicsMap.put(key, map.get(key).toString());
             }
         }
+        Manufacturer manufacturer = new Manufacturer(rs.getObject("manufacturer_id", java.util.UUID.class),
+                rs.getString("mname"));
 
-        return Product.builder().id(id).name(name).price(price).description(description).color(color)
-                .manufacturer(manufacturer).characteristics(characteristicsMap).build();
+        return Product.builder().id(id).name(name).price(price).storageCnt(stogageCnt).description(description)
+                .color(color).imgRef(imgRef).manufacturer(manufacturer).characteristics(characteristicsMap).build();
     }
 
 }

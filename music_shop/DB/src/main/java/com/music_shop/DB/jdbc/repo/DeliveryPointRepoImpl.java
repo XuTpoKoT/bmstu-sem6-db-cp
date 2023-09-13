@@ -26,6 +26,9 @@ public class DeliveryPointRepoImpl implements DeliveryPointRepo {
         FROM public.deliverypoint
         WHERE id = :id 
     """;
+    private static final String SQL_SET_ROLE_UNREGISTERED = """
+        SET ROLE unregistered;
+    """;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final DeliveryPointMapper deliveryPointMapper;
@@ -41,6 +44,7 @@ public class DeliveryPointRepoImpl implements DeliveryPointRepo {
         MapSqlParameterSource params = new MapSqlParameterSource();
         List<DeliveryPoint> deliveryPoints = new ArrayList<>();
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_UNREGISTERED, new MapSqlParameterSource());
             deliveryPoints = jdbcTemplate.query(SQL_GET_ALL_DELIVERY_POINTS, params, deliveryPointMapper)
                     .stream().toList();
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -58,6 +62,7 @@ public class DeliveryPointRepoImpl implements DeliveryPointRepo {
         params.addValue("id", id);
         DeliveryPoint deliveryPoint;
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_UNREGISTERED, new MapSqlParameterSource());
             deliveryPoint = jdbcTemplate.queryForObject(SQL_GET_DELIVERY_POINT_BY_ID, params, deliveryPointMapper);
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;

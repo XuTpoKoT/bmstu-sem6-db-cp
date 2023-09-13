@@ -91,7 +91,7 @@ public class OrderController {
             List<Order> orders;
             final int pageSize = 10;
             if (roles.contains(User.Role.EMPLOYEE.name())) {
-                int countOrders= orderService.getCountOrdersByCustomerLogin(authentication.getName());
+                int countOrders= orderService.getCountOrdersByEmployeeLogin(authentication.getName());
                 addPaginationInfoToModel(countOrders, page, pageSize, model);
                 int skip = (page - 1) * pageSize;
                 orders = orderService.getOrdersByEmployeeLogin(authentication.getName(), skip, pageSize);
@@ -112,6 +112,9 @@ public class OrderController {
         return "orders";
     }
     private void addPaginationInfoToModel(int countOrders, int page, int pageSize, Model model) {
+        System.out.println("count orders" + countOrders);
+        System.out.println("page" + page);
+        System.out.println("pageSize" + pageSize);
         int countPages = (int) Math.ceil((double) countOrders / pageSize);
         if (page < 1) {
             page = 1;
@@ -122,6 +125,7 @@ public class OrderController {
         int endPage = Math.min(page + 1, countPages);
         List<Integer> pageNumbers = IntStream.rangeClosed(startPage, endPage)
                 .boxed().toList();
+        System.out.println(pageNumbers);
         model.addAttribute("pageNumbers", pageNumbers);
         model.addAttribute("needDots", Collections.max(pageNumbers) + 1 < countPages);
         model.addAttribute("needLastPage", Collections.max(pageNumbers) < countPages);

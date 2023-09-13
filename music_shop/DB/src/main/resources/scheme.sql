@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS public.User (
     , last_name  text
     , birth_date date
     , email      text
-    , constraint check_role check (role_ in ('EMPLOYEE','CUSTOMER'))
+    , constraint check_role check (role_ in ('EMPLOYEE','CUSTOMER', 'ADMIN'))
 );
 
 CREATE TABLE IF NOT EXISTS public.Card (
@@ -20,11 +20,13 @@ CREATE TABLE IF NOT EXISTS public.Manufacturer (
 );
 
 CREATE TABLE IF NOT EXISTS public.Product (
-    id 	              uuid PRIMARY KEY
+    id 	              uuid PRIMARY KEY DEFAULT gen_random_uuid()
     , name_           text NOT NULL
     , price           int  NOT NULL
     , description     text
     , color           text
+    , storage_cnt     int  NOT NULL DEFAULT 0 CHECK (storage_cnt >= 0)
+    , img_ref         text
     , manufacturer_id uuid NOT NULL REFERENCES public.Manufacturer(id) ON DELETE CASCADE
     , characteristics json
 );
@@ -59,3 +61,36 @@ CREATE TABLE IF NOT EXISTS public.Cart (
     , cnt_products 	   int  NOT NULL CHECK (cnt_products > 0)
     , primary key(login, product_id)
 );
+
+CREATE ROLE unregistered;
+GRANT SELECT, INSERT ON public.User TO unregistered;
+GRANT SELECT ON public.Manufacturer TO unregistered;
+GRANT SELECT ON public.Product TO unregistered;
+GRANT SELECT ON public.DeliveryPoint TO unregistered;
+GRANT INSERT ON public.Card TO unregistered;
+
+CREATE ROLE customer;
+GRANT SELECT ON public.User TO customer;
+GRANT SELECT ON public.Manufacturer TO customer;
+GRANT SELECT ON public.Product TO customer;
+GRANT SELECT ON public.DeliveryPoint TO customer;
+GRANT SELECT, UPDATE ON public.Card TO customer;
+GRANT SELECT, INSERT ON public.Order_ TO customer;
+GRANT SELECT, INSERT ON public.Order_Product TO customer;
+GRANT SELECT, INSERT, update, Delete ON public.Cart TO customer;
+
+REVOKE SELECT, INSERT ON public.Order_ FROM customer;
+REVOKE SELECT, INSERT ON public.Order_Product FROM customer;
+
+CREATE ROLE employee;
+GRANT SELECT ON public.User TO employee;
+GRANT SELECT ON public.Manufacturer TO employee;
+GRANT SELECT ON public.Product TO employee;
+GRANT SELECT ON public.DeliveryPoint TO employee;
+GRANT SELECT, UPDATE ON public.Card TO employee;
+GRANT SELECT, INSERT ON public.Order_ TO employee;
+GRANT SELECT, INSERT ON public.Order_Product TO employee;
+GRANT SELECT, INSERT, update, Delete ON public.Cart TO employee;
+
+CREATE ROLE admin_;
+grant all privileges ON all tables in schema public to admin_;

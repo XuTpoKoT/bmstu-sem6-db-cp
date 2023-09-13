@@ -3,6 +3,7 @@ package com.music_shop.BL.service;
 import com.music_shop.BL.API.ProductService;
 import com.music_shop.BL.exception.NonexistentProductException;
 import com.music_shop.BL.model.Product;
+import com.music_shop.DB.API.ManufacturerRepo;
 import com.music_shop.DB.API.ProductRepo;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,8 @@ public class ProductServiceTest {
     @Test
     public void givenCorrectId_whenGetProductById_thenSuccess() {
         ProductRepo productRepo = mock(ProductRepo.class);
-        ProductService productService = new ProductServiceImpl(productRepo);
+        ManufacturerRepo manufacturerRepo = mock(ManufacturerRepo.class);
+        ProductService productService = new ProductServiceImpl(productRepo, manufacturerRepo);
 
         Map<String, String> characteristics = new HashMap<>();
         characteristics.put("cntFrets", "24");
@@ -40,7 +42,8 @@ public class ProductServiceTest {
     @Test
     public void givenNonexistentId_whenGetProductById_thenThrowNonexistentProductException() {
         ProductRepo productRepo = mock(ProductRepo.class);
-        ProductService productService = new ProductServiceImpl(productRepo);
+        ManufacturerRepo manufacturerRepo = mock(ManufacturerRepo.class);
+        ProductService productService = new ProductServiceImpl(productRepo, manufacturerRepo);
 
         when(productRepo.getProductById(productID)).thenReturn(null);
 
@@ -52,7 +55,8 @@ public class ProductServiceTest {
     @Test
     public void whenGetAllProducts_thenSuccess() {
         ProductRepo productRepo = mock(ProductRepo.class);
-        ProductService productService = new ProductServiceImpl(productRepo);
+        ManufacturerRepo manufacturerRepo = mock(ManufacturerRepo.class);
+        ProductService productService = new ProductServiceImpl(productRepo, manufacturerRepo);
 
         List<Product> productList = new ArrayList<Product>();
         when(productRepo.getAllProducts()).thenReturn(productList);

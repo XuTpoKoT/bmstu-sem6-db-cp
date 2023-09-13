@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Music Shop Online</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/styles/main.css}" />
+</head>
+<body xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+  <th:block th:include="/_header"></th:block>
+  <th:block th:include="/_menu"></th:block>
+
+  <form class="form-signin" action="/newproduct" method="post">
+    <h2 class="form-signin-heading">Добавление товара</h2>
+    <p>
+      <label for="productName">Название</label>
+      <input type="text" id="productName" name="productName" class="form-control" required>
+    </p>
+    <p>
+      <label for="price">Цена</label>
+      <input type="int" id="price" name="price" class="form-control" required>
+    </p>
+    <p>
+      <label for="color">Цвет</label>
+      <input type="int" id="color" name="color" class="form-control" required>
+    </p>
+    <div class="summary-delivery">
+      <label for="selMan">Производитель</label>
+      <select id="selMan" th:name="manufacturerId" class="summary-delivery-selection" >
+        <option th:value="${manufacturer.getId()}" th:text="${manufacturer.getName()}" th:each="manufacturer : ${manufacturers}"></option>
+      </select>
+    </div>
+    <p>
+      <label for="description">Описание</label>
+      <input type="int" id="description" name="description" class="form-control" required>
+    </p>
+    <p>
+      <label for="imgRef">Ссылка на картинку</label>
+      <input type="int" id="imgRef" name="imgRef" class="form-control" required>
+    </p>
+
+    <button class="btn btn-lg btn-primary btn-block" type="submit">Добавить</button>
+  </form>
+
+</body>
+</html>

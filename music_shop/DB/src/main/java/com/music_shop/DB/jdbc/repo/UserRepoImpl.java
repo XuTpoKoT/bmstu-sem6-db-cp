@@ -22,6 +22,9 @@ public class UserRepoImpl implements UserRepo {
         FROM public.user
         WHERE login = :login 
     """;
+    private static final String SQL_SET_ROLE_UNREGISTERED = """
+        SET ROLE unregistered;
+    """;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final UserMapper userMapper;
@@ -40,6 +43,7 @@ public class UserRepoImpl implements UserRepo {
         params.addValue("role", user.getRole().toString());
 
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_UNREGISTERED, new MapSqlParameterSource());
             jdbcTemplate.update(SQL_ADD_USER, params);
         } catch (DataAccessException e) {
             throw new DBException(e.getMessage());
@@ -55,6 +59,7 @@ public class UserRepoImpl implements UserRepo {
 
         User user;
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_UNREGISTERED, new MapSqlParameterSource());
             user = jdbcTemplate.queryForObject(SQL_GET_USER_BY_LOGIN, params, userMapper);
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;

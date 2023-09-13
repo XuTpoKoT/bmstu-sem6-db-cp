@@ -56,7 +56,7 @@ public class OrderRepoImpl implements OrderRepo {
         LIMIT :limit
         OFFSET :offset
     """;
-    private static final String SQL_GET_ORDER_DETAILS_BY_ORDER_ID = """
+    private static final String SQL_GET_ORDER_DETAILS_BY_ORDER_ID = """        
         SELECT *
         FROM public.order_product
         WHERE order_id = :order_id
@@ -64,6 +64,15 @@ public class OrderRepoImpl implements OrderRepo {
     private static final String SQL_ADD_ORDER_DETAILS = """
         INSERT INTO public.order_product (order_id, product_id, price, cnt_products)
         VALUES (:orderId, :productId, :price, :cntProducts)
+    """;
+    private static final String SQL_SET_ROLE_UNREGISTERED = """
+        SET ROLE unregistered;
+    """;
+    private static final String SQL_SET_ROLE_CUSTOMER = """
+        SET ROLE customer;
+    """;
+    private static final String SQL_SET_ROLE_EMPLOYEE = """
+        SET ROLE employee;
     """;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
@@ -93,6 +102,7 @@ public class OrderRepoImpl implements OrderRepo {
         params.addValue("paidByBonuses", order.getPaidByBonuses());
 
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_CUSTOMER, new MapSqlParameterSource());
             jdbcTemplate.update(SQL_ADD_ORDER, params);
             Map<UUID, Integer> productCountMap = order.getProductCountMap();
             Map<UUID, Integer> productPriceMap = order.getProductPriceMap();
@@ -117,6 +127,7 @@ public class OrderRepoImpl implements OrderRepo {
         params.addValue("limit", limit);
         List<Order> orders;
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_CUSTOMER, new MapSqlParameterSource());
             orders = jdbcTemplate.query(SQL_GET_ORDERS_BY_CUSTOMER_LOGIN, params, orderMapper).stream().toList();
             for (Order o : orders) {
                 Map<UUID, Integer> productCountMap = new HashMap<>();
@@ -149,6 +160,7 @@ public class OrderRepoImpl implements OrderRepo {
         params.addValue("limit", limit);
         List<Order> orders;
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_EMPLOYEE, new MapSqlParameterSource());
             orders = jdbcTemplate.query(SQL_GET_ORDERS_BY_EMPLOYEE_LOGIN, params, orderMapper).stream().toList();
             for (Order o : orders) {
                 Map<UUID, Integer> productCountMap = new HashMap<>();
@@ -176,6 +188,7 @@ public class OrderRepoImpl implements OrderRepo {
         params.addValue("login", customerLogin);
         Integer count;
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_CUSTOMER, new MapSqlParameterSource());
             count = jdbcTemplate.queryForObject(
                     SQL_GET_COUNT_ORDERS_BY_CUSTOMER_LOGIN, params, Integer.class);
         } catch (Exception e) {
@@ -191,6 +204,7 @@ public class OrderRepoImpl implements OrderRepo {
         params.addValue("login", employeeLogin);
         Integer count;
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_EMPLOYEE, new MapSqlParameterSource());
             count = jdbcTemplate.queryForObject(
                     SQL_GET_COUNT_ORDERS_BY_EMPLOYEE_LOGIN, params, Integer.class);
         } catch (Exception e) {

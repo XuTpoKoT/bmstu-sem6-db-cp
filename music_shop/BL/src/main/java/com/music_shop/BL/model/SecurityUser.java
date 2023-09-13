@@ -60,6 +60,7 @@ public class SecurityUser implements UserDetails {
 
     public static UserDetails fromUser(User user) {
         String decodedPassword = new String(Base64.getDecoder().decode(user.getPassword()), StandardCharsets.UTF_8);
+        System.out.println(decodedPassword);
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority(user.getRole().toString());
         return new org.springframework.security.core.userdetails.User(
                 user.getLogin(), passwordEncoder.encode(decodedPassword),

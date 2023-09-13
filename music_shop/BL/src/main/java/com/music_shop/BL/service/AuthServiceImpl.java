@@ -32,6 +32,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public User.Role login(String login, String password) throws RuntimeException {
         log.info("login called with " + login);
+        System.out.println(password);
         User user = userRepo.getUserByLogin(login);
         if (user == null) {
             RuntimeException e = new NonexistentLoginException("Нет такого логина!");
@@ -52,6 +53,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public void registration(String login, String password) throws RuntimeException {
         log.info("registration called with " + login);
+        System.out.println(password);
         User user = userRepo.getUserByLogin(login);
         if (user != null) {
             RuntimeException e = new OccupiedLoginException("Логин уже занят!");

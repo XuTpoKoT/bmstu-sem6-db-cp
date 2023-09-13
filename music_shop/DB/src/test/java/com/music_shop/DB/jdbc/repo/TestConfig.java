@@ -22,7 +22,7 @@ public class TestConfig {
     static {
         postgreSQLContainer = new PostgreSQLContainer<>("postgres:13")
                 .withDatabaseName("integration-tests-db")
-                .withUsername("sa")
+                .withUsername("postgres")
                 .withPassword("sa")
                 .withExposedPorts(5432);
         postgreSQLContainer.start();

@@ -25,4 +25,11 @@
     </a>
   </th:block>
 
+  <th:block sec:authorize="hasAuthority('ADMIN')">
+    |
+    <a th:href="@{/newproduct}">
+      Добавление товара
+    </a>
+  </th:block>
+
 </div>

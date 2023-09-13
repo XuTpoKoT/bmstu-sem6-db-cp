@@ -9,5 +9,4 @@ import java.util.UUID;
 @Component
 public interface DeliveryPointService {
     List<DeliveryPoint> getAllDeliveryPoints();
-    DeliveryPoint getDeliveryPointByID(UUID id);
 }

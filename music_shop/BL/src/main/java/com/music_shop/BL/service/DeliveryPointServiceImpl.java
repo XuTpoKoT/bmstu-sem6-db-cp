@@ -26,9 +26,4 @@ public class DeliveryPointServiceImpl implements DeliveryPointService {
         log.info("getAllDeliveryPoints called");
         return deliveryPointRepo.getAllDeliveryPoints();
     }
-
-    @Override
-    public DeliveryPoint getDeliveryPointByID(UUID id) {
-        return deliveryPointRepo.getDeliveryPointByID(id);
-    }
 }

@@ -17,12 +17,12 @@ import java.util.*;
 @Component
 public class CartRepoImpl implements CartRepo {
     private static final String SQL_GET_PRODUCTS_IN_CART = """
-        SELECT p.id, p.name_ as pname, price, color, description, characteristics, m.name_ as mname,
-         c.cnt_products
+        SELECT p.id, p.name_ as pname, price, color, storage_cnt, img_ref, description, characteristics, m.name_ as mname,
+         c.cnt_products, m.id as manufacturer_id
         FROM public.product p
             join public.manufacturer m on m.id = p.manufacturer_id
             join public.cart c on c.product_id = p.id
-        WHERE c.login = :login
+        WHERE c.login = :login;
     """;
     private static final String SQL_ADD_PRODUCT= """
         INSERT INTO public.cart (login, product_id, cnt_products) 
@@ -33,7 +33,7 @@ public class CartRepoImpl implements CartRepo {
     private static final String SQL_REMOVE_PRODUCT= """
         DELETE FROM public.cart c
         WHERE c.login = :login
-            AND c.product_id = :product_id
+            AND c.product_id = :product_id;
     """;
     private static final String SQL_CLEAN_CART= """
         DELETE FROM public.cart c
@@ -43,6 +43,9 @@ public class CartRepoImpl implements CartRepo {
         UPDATE public.cart
         SET cnt_products=:count
         WHERE login=:login and product_id=:product_id;
+    """;
+    private static final String SQL_SET_ROLE_CUSTOMER = """
+        SET ROLE customer;
     """;
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final CartItemMapper cartItemMapper;
@@ -59,6 +62,7 @@ public class CartRepoImpl implements CartRepo {
         List<AbstractMap.SimpleImmutableEntry<Product, Integer>> products;
         Map<Product, Integer> resMap = new HashMap<>();
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_CUSTOMER, new MapSqlParameterSource());
             products = jdbcTemplate.query(SQL_GET_PRODUCTS_IN_CART, params, cartItemMapper).stream().toList();
             for (AbstractMap.SimpleImmutableEntry<Product, Integer> entry : products) {
                 resMap.put(entry.getKey(), entry.getValue());
@@ -80,6 +84,7 @@ public class CartRepoImpl implements CartRepo {
         params.addValue("count", count);
 
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_CUSTOMER, new MapSqlParameterSource());
             jdbcTemplate.update(SQL_ADD_PRODUCT, params);
         } catch (DataAccessException e) {
             throw new DBException(e.getMessage());
@@ -93,6 +98,7 @@ public class CartRepoImpl implements CartRepo {
         params.addValue("product_id", productID);
 
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_CUSTOMER, new MapSqlParameterSource());
             jdbcTemplate.update(SQL_REMOVE_PRODUCT, params);
         } catch (DataAccessException e) {
             throw new DBException(e.getMessage());
@@ -107,6 +113,7 @@ public class CartRepoImpl implements CartRepo {
         params.addValue("count", count);
 
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_CUSTOMER, new MapSqlParameterSource());
             jdbcTemplate.update(SQL_UPDATE_PRODUCT, params);
         } catch (DataAccessException e) {
             throw new DBException(e.getMessage());
@@ -119,6 +126,7 @@ public class CartRepoImpl implements CartRepo {
         params.addValue("login", login);
 
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_CUSTOMER, new MapSqlParameterSource());
             jdbcTemplate.update(SQL_CLEAN_CART, params);
         } catch (DataAccessException e) {
             throw new DBException(e.getMessage());

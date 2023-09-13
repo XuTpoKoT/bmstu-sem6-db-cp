@@ -1,6 +1,9 @@
 package com.music_shop.mpa.controller;
 
+import com.music_shop.BL.API.ManufacturerService;
 import com.music_shop.BL.API.ProductService;
+import com.music_shop.BL.model.AddProductDTO;
+import com.music_shop.BL.model.Manufacturer;
 import com.music_shop.BL.model.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -8,10 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,10 +21,12 @@ import java.util.stream.IntStream;
 @RequestMapping("/")
 public class ProductController {
     private final ProductService productService;
+    private final ManufacturerService manufacturerService;
 
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ManufacturerService manufacturerService) {
         this.productService = productService;
+        this.manufacturerService = manufacturerService;
     }
 
     @GetMapping()
@@ -70,5 +72,30 @@ public class ProductController {
         Product product = productService.getProductById(UUID.fromString(id));
         model.addAttribute("product", product);
         return "product";
+    }
+
+    @GetMapping("newproduct")
+    public String createProductPage(Model model) {
+        System.out.println("createProductPage called ");
+        List<Manufacturer> manufacturers = manufacturerService.getAllManufacturers();
+        System.out.println("manufacturers");
+        System.out.println(manufacturers);
+        model.addAttribute("manufacturers", manufacturers);
+        return "createProduct";
+    }
+    @PostMapping("newproduct")
+    public String createProduct(Model model,
+                                @RequestParam(name = "productName") String productName,
+                                @RequestParam(name = "price") int price,
+                                @RequestParam(name = "color") String color,
+                                @RequestParam(name = "manufacturerId") String manufacturerId,
+                                @RequestParam(name = "description") String description,
+                                @RequestParam(name = "imgRef") String imgRef) {
+        System.out.println("createProduct called ");
+        AddProductDTO addProductDTO = AddProductDTO.builder().name(productName).price(price).color(color)
+                .description(description).manufacturerId(UUID.fromString(manufacturerId)).imgRef(imgRef).build();
+
+        productService.addProduct(addProductDTO);
+        return "home";
     }
 }

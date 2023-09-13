@@ -29,6 +29,12 @@ public class CardRepoImpl implements CardRepo {
         INSERT INTO public.card (user_login, bonuses) 
         VALUES (:user_login, 0) 
     """;
+    private static final String SQL_SET_ROLE_CUSTOMER = """
+        SET ROLE customer;
+    """;
+    private static final String SQL_SET_ROLE_UNREGISTERED = """
+        SET ROLE unregistered;
+    """;
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final CardMapper cardMapper;
@@ -46,6 +52,7 @@ public class CardRepoImpl implements CardRepo {
 
         Card card;
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_CUSTOMER, new MapSqlParameterSource());
             card = jdbcTemplate.queryForObject(SQL_GET_CARD_BY_CUSTOMER_LOGIN, params, cardMapper);
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
@@ -61,6 +68,7 @@ public class CardRepoImpl implements CardRepo {
         params.addValue("user_login", customerLogin);
 
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_UNREGISTERED, new MapSqlParameterSource());
             jdbcTemplate.update(SQL_ADD_CARD, params);
         } catch (DataAccessException e) {
             throw new DBException(e.getMessage());
@@ -74,6 +82,7 @@ public class CardRepoImpl implements CardRepo {
         params.addValue("bonuses", card.getBonuses());
 
         try {
+            jdbcTemplate.update(SQL_SET_ROLE_CUSTOMER, new MapSqlParameterSource());
             jdbcTemplate.update(SQL_UPDATE_CARD, params);
         } catch (DataAccessException e) {
             throw new DBException(e.getMessage());

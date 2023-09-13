@@ -11,6 +11,7 @@ public class User {
     public enum Role {
         CUSTOMER,
         EMPLOYEE,
+        ADMIN,
         UNREGISTERED;
     }
     private String login;
