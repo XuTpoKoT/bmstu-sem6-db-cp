@@ -2,29 +2,37 @@ package com.music_shop.mpa.controller;
 
 import com.music_shop.BL.API.CartService;
 import com.music_shop.BL.API.OrderService;
-import com.music_shop.BL.model.MakeOrderDTO;
+import com.music_shop.BL.log.Logger;
+import com.music_shop.BL.log.LoggerImpl;
+import com.music_shop.BL.dto.MakeOrderDTO;
 import com.music_shop.BL.model.Order;
 import com.music_shop.BL.model.Product;
 import com.music_shop.BL.model.User;
+import com.music_shop.mpa.util.PaginationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/orders")
 public class OrderController {
+    private final Logger log = new LoggerImpl(getClass().getName());
     private final OrderService orderService;
     private final CartService cartService;
 
@@ -38,9 +46,7 @@ public class OrderController {
     public String makeOrder(@RequestParam String deliveryPointId,
                             @RequestParam(name = "customer", required = false) String customerLogin,
                             @RequestParam(required = false) boolean needSpendBonuses,
-                            Model model,
                             RedirectAttributes redirectAttributes) {
-        System.out.println("makeOrder called ");
         if (customerLogin != null && customerLogin.isEmpty()) {
             customerLogin = null;
         }
@@ -72,7 +78,7 @@ public class OrderController {
         try {
             orderService.makeOrder(makeOrderDTO);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            log.error(e.getMessage(), e);
             redirectAttributes.addAttribute("errorMessage", e.getMessage());
             return "redirect:/cart";
         }
@@ -83,7 +89,7 @@ public class OrderController {
     @GetMapping()
     public String getOrdersByLogin(Model model,
                                           @RequestParam(name = "pageNumber", defaultValue = "1") int page) {
-        System.out.println("getOrdersByLoginAndPageNumber called");
+        log.debug("getOrdersByLoginAndPageNumber called");
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             Set<String> roles = authentication.getAuthorities().stream()
@@ -92,44 +98,20 @@ public class OrderController {
             final int pageSize = 10;
             if (roles.contains(User.Role.EMPLOYEE.name())) {
                 int countOrders= orderService.getCountOrdersByEmployeeLogin(authentication.getName());
-                addPaginationInfoToModel(countOrders, page, pageSize, model);
+                PaginationHelper.addPaginationInfoToModel(countOrders, page, pageSize, model);
                 int skip = (page - 1) * pageSize;
                 orders = orderService.getOrdersByEmployeeLogin(authentication.getName(), skip, pageSize);
             } else {
                 int countOrders= orderService.getCountOrdersByCustomerLogin(authentication.getName());
-                addPaginationInfoToModel(countOrders, page, pageSize, model);
+                PaginationHelper.addPaginationInfoToModel(countOrders, page, pageSize, model);
                 int skip = (page - 1) * pageSize;
                 orders = orderService.getOrdersByCustomerLogin(authentication.getName(), skip, pageSize);
             }
-            for (Order o : orders) {
-                System.out.println(o.getDate());
-            }
             model.addAttribute("orders", orders);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
         }
 
         return "orders";
-    }
-    private void addPaginationInfoToModel(int countOrders, int page, int pageSize, Model model) {
-        System.out.println("count orders" + countOrders);
-        System.out.println("page" + page);
-        System.out.println("pageSize" + pageSize);
-        int countPages = (int) Math.ceil((double) countOrders / pageSize);
-        if (page < 1) {
-            page = 1;
-        }  else if (page > countPages) {
-            page = countPages;
-        }
-        int startPage = Math.max(page - 1, 1);
-        int endPage = Math.min(page + 1, countPages);
-        List<Integer> pageNumbers = IntStream.rangeClosed(startPage, endPage)
-                .boxed().toList();
-        System.out.println(pageNumbers);
-        model.addAttribute("pageNumbers", pageNumbers);
-        model.addAttribute("needDots", Collections.max(pageNumbers) + 1 < countPages);
-        model.addAttribute("needLastPage", Collections.max(pageNumbers) < countPages);
-        model.addAttribute("countPages", countPages);
-        model.addAttribute("currentPage", page);
     }
 }

@@ -10,8 +10,8 @@
 
   <div class="container">
 
-    <form class="form-signin" action="/auth/registration/customer" method="post">
-      <h2 class="form-signin-heading">Регистрация</h2>
+    <form class="form-signin" action="/auth/registration/employee" method="post">
+      <h2 class="form-signin-heading">Добавление сотрудника</h2>
       <p>
         <label for="username">Логин</label>
         <input type="text" id="username" name="username" class="form-control" placeholder="логин" required>
@@ -20,7 +20,7 @@
         <label for="password">Пароль</label>
         <input type="password" id="password" name="password" class="form-control" placeholder="пароль" required>
       </p>
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Зарегистрироваться</button>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Добавить</button>
     </form>
 
     <span th:if="${errorMessage != null}" th:text="${errorMessage}"></span>

@@ -13,12 +13,21 @@
     <p th:text="'Цена: ' + ${product.getPrice()}"></p>
     <p th:text="'Цвет: ' + ${product.getColor()}"></p>
     <p th:text="'Производитель: ' + ${product.getManufacturer().getName()}"></p>
+    <p sec:authorize="hasAuthority('CUSTOMER')" th:text="'Кол-во на складе: ' + ${product.getStorageCnt()}"></p>
+    <form sec:authorize="hasAnyAuthority('ADMIN', 'EMPLOYEE')" action="/product" th:method="patch">
+        <label for="storageCnt">Кол-во на складе:</label>
+        <input type="hidden" name="productId" th:value="${product.getId()}">
+        <input type="number" id="storageCnt" name="storageCnt" th:value="${product.getStorageCnt()}" min="0" class="product-quantity-field">
+        <input type="submit" value="Изменить">
+    </form>
+
     <p th:text="'Описание: ' + ${product.getDescription()}"></p>
     <p th:text="'Дополнительные зарактеристики: '"></p>
     <div th:each="entry : ${product.getCharacteristics()}">
         <p th:text="${entry.key} + ': ' + ${entry.value}"></p>
     </div>
-    <form sec:authorize="hasAnyAuthority('CUSTOMER', 'EMPLOYEE')" class="form-signin" action="/cart" method="post">
+    <p th:if="${product.getStorageCnt() <= 0}" th:text="'Нет в наличии'"></p>
+    <form th:if="${product.getStorageCnt() > 0}" sec:authorize="hasAnyAuthority('CUSTOMER', 'EMPLOYEE')" class="form-signin" action="/cart" method="post">
         <input type="hidden" id="productId" name="productId" th:value="${product.getId()}">
         <button class="btn btn-lg btn-primary btn-block" type="submit">Добавить в корзину</button>
     </form>

@@ -1,6 +1,8 @@
 package com.music_shop.mpa.controller;
 
 import com.music_shop.BL.API.UserService;
+import com.music_shop.BL.log.Logger;
+import com.music_shop.BL.log.LoggerImpl;
 import com.music_shop.BL.model.Order;
 import com.music_shop.BL.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/user")
 public class UserController {
+    private final Logger log = new LoggerImpl(getClass().getName());
 
     private final UserService userService;
 

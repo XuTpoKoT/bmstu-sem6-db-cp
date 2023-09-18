@@ -13,3 +13,14 @@ spring:
       filter:
         enabled:
           true
+logging:
+  level:
+    org.thymeleaf: ERROR
+    org.springframework.web: INFO
+    com.music_shop.BL: DEBUG
+    com.music_shop.MPA: DEBUG
+  pattern:
+    console: "[%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: "my.log"

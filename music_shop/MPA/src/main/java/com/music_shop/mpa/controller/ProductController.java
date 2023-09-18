@@ -2,24 +2,25 @@ package com.music_shop.mpa.controller;
 
 import com.music_shop.BL.API.ManufacturerService;
 import com.music_shop.BL.API.ProductService;
-import com.music_shop.BL.model.AddProductDTO;
+import com.music_shop.BL.log.Logger;
+import com.music_shop.BL.log.LoggerImpl;
+import com.music_shop.BL.dto.AddProductDTO;
 import com.music_shop.BL.model.Manufacturer;
 import com.music_shop.BL.model.Product;
+import com.music_shop.mpa.util.PaginationHelper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpRequest;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Controller
 @RequestMapping("/")
 public class ProductController {
+    private final Logger log = new LoggerImpl(getClass().getName());
     private final ProductService productService;
     private final ManufacturerService manufacturerService;
 
@@ -32,43 +33,18 @@ public class ProductController {
     @GetMapping()
     public String getProductsByPageNumber(Model model,
                                           @RequestParam(name = "pageNumber", defaultValue = "1") int page) {
-        System.out.println("getProductsByPageNumber called");
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Set<String> roles = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
-        System.out.println(roles);
         final int pageSize = 6;
-        try {
-            int countProducts = productService.getCountProducts();
-            int countPages = (int) Math.ceil((double) countProducts / pageSize);
-            if (page < 1) {
-                page = 1;
-            }  else if (page > countPages) {
-                page = countPages;
-            }
-            int startPage = Math.max(page - 1, 1);
-            int endPage = Math.min(page + 1, countPages);
-            List<Integer> pageNumbers = IntStream.rangeClosed(startPage, endPage)
-                    .boxed().toList();
-            model.addAttribute("pageNumbers", pageNumbers);
-            model.addAttribute("needDots", Collections.max(pageNumbers) + 1 < countPages);
-            model.addAttribute("needLastPage", Collections.max(pageNumbers) < countPages);
-            model.addAttribute("countPages", countPages);
-            model.addAttribute("currentPage", page);
-            int skip = (page - 1) * pageSize;
-            List<Product> products = productService.getProductsBySkipAndLimit(skip, pageSize);
-            model.addAttribute("products", products);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        int countProducts = productService.getCountProducts();
+        PaginationHelper.addPaginationInfoToModel(countProducts, page, pageSize, model);
+        int skip = (page - 1) * pageSize;
+        List<Product> products = productService.getProductsBySkipAndLimit(skip, pageSize);
+        model.addAttribute("products", products);
 
         return "home";
     }
 
     @GetMapping("products/{id}")
     public String getProductInfo(@PathVariable String id, Model model) {
-        System.out.println("getProductInfo called " + id);
         Product product = productService.getProductById(UUID.fromString(id));
         model.addAttribute("product", product);
         return "product";
@@ -76,26 +52,33 @@ public class ProductController {
 
     @GetMapping("newproduct")
     public String createProductPage(Model model) {
-        System.out.println("createProductPage called ");
         List<Manufacturer> manufacturers = manufacturerService.getAllManufacturers();
-        System.out.println("manufacturers");
-        System.out.println(manufacturers);
         model.addAttribute("manufacturers", manufacturers);
         return "createProduct";
     }
+
     @PostMapping("newproduct")
-    public String createProduct(Model model,
-                                @RequestParam(name = "productName") String productName,
+    public String createProduct(@RequestParam(name = "productName") String productName,
                                 @RequestParam(name = "price") int price,
                                 @RequestParam(name = "color") String color,
                                 @RequestParam(name = "manufacturerId") String manufacturerId,
                                 @RequestParam(name = "description") String description,
                                 @RequestParam(name = "imgRef") String imgRef) {
-        System.out.println("createProduct called ");
         AddProductDTO addProductDTO = AddProductDTO.builder().name(productName).price(price).color(color)
                 .description(description).manufacturerId(UUID.fromString(manufacturerId)).imgRef(imgRef).build();
 
         productService.addProduct(addProductDTO);
         return "home";
+    }
+    @PatchMapping("product")
+    public String changeProductCnt(
+            HttpServletRequest request,
+            @RequestParam(name = "productId") String productId,
+            @RequestParam(name = "storageCnt") Integer productCnt) {
+        log.debug("changeProductCnt id " + productCnt);
+        log.debug("uri " + request.getRequestURI());
+
+        productService.changeProductCnt(UUID.fromString(productId), productCnt);
+        return "redirect:" + request.getRequestURI();
     }
 }

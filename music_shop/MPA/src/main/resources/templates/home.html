@@ -19,11 +19,14 @@
                 <a th:href="@{/products/{id}(id=${product.getId()})}" th:utext="${product.getName()}"></a>
             </li>
             <li><span th:utext="${product.getPrice()}"></span></li>
-            <li sec:authorize="hasAnyAuthority('CUSTOMER', 'EMPLOYEE')">
+            <li th:if="${product.getStorageCnt() > 0}" sec:authorize="hasAnyAuthority('CUSTOMER', 'EMPLOYEE')">
                 <form class="form-signin" action="/cart" method="post">
                     <input type="hidden" id="productId" name="productId" th:value="${product.getId()}">
                     <button class="btn btn-lg btn-primary btn-block" type="submit">В корзину</button>
                 </form>
+            </li>
+            <li th:if="${product.getStorageCnt() <= 0}" sec:authorize="hasAnyAuthority('CUSTOMER', 'EMPLOYEE')">
+                    Нет в наличии
             </li>
         </ul>
     </div>

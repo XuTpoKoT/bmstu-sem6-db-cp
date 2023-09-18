@@ -124,3 +124,12 @@ ul {
 table td {
     padding: 5px;
 }
+
+.product-quantity-field {
+    background-color: #ccc;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    font-size: 0.625rem;
+    padding: 2px;
+    width: 3.75rem;
+}

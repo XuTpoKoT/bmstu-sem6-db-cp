@@ -31,5 +31,11 @@
       Добавление товара
     </a>
   </th:block>
+  <th:block sec:authorize="hasAuthority('ADMIN')">
+    |
+    <a th:href="@{/auth/registration/employee}">
+      Добавление сотрудника
+    </a>
+  </th:block>
 
 </div>
