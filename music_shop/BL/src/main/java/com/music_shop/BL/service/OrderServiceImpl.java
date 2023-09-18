@@ -1,6 +1,8 @@
 package com.music_shop.BL.service;
 
 import com.music_shop.BL.API.OrderService;
+import com.music_shop.BL.dto.MakeOrderDTO;
+import com.music_shop.BL.exception.DBException;
 import com.music_shop.BL.exception.NonexistentCardException;
 import com.music_shop.BL.exception.NonexistentCustomerException;
 import com.music_shop.BL.exception.NonexistentProductException;
@@ -12,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
         return orderRepo.getCountOrdersByEmployeeLogin(employeeLogin);
     }
 
-    @Transactional
+    @Transactional(timeout = 5)
     @Override
     public UUID makeOrder(MakeOrderDTO makeOrderDTO) {
         log.info("makeOrder called with orderId " + makeOrderDTO.id());
@@ -64,6 +65,7 @@ public class OrderServiceImpl implements OrderService {
         Map<UUID, Integer> productPriceMap = getProductPriceMap(products);
         int initialCost = calcInitialCost(products, makeOrderDTO.productCountMap());
         DeliveryPoint deliveryPoint = deliveryPointRepo.getDeliveryPointByID(makeOrderDTO.deliveryPointID());
+
 
         int paidByBonuses = 0;
         if (makeOrderDTO.customerLogin() != null) {
@@ -95,16 +97,20 @@ public class OrderServiceImpl implements OrderService {
                 .productPriceMap(productPriceMap)
                 .paidByBonuses(paidByBonuses)
                 .build();
-        orderRepo.addOrder(order);
-        cleanCart(makeOrderDTO);
+        try {
+            orderRepo.addOrder(order);
+            cleanCart(makeOrderDTO);
+        } catch (DBException e) {
+            log.error(e.getMessage(), e);
+        }
+
         return order.getId();
     }
 
     private void checkCustomer(String customerLogin) {
-        log.debug("checkCustomer called with " + customerLogin);
         if (customerLogin != null && userRepo.getUserByLogin(customerLogin) == null) {
             RuntimeException e = new NonexistentCustomerException("Нет такого заказчика!");
-            log.error("Nonexistent customer", e);
+            log.info("Nonexistent customer " + customerLogin);
             throw e;
         }
     }
@@ -150,11 +156,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private void cleanCart(MakeOrderDTO makeOrderDTO) {
-        log.debug("cleanCart called");
         String login = makeOrderDTO.employeeLogin();
         if (login == null) {
             login = makeOrderDTO.customerLogin();
         }
+        log.debug("cleanCart called with login" + login);
         cartRepo.cleanCart(login);
     }
 }

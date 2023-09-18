@@ -50,7 +50,7 @@ public class DeliveryPointRepoImpl implements DeliveryPointRepo {
         } catch (IncorrectResultSizeDataAccessException e) {
             return deliveryPoints;
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return deliveryPoints;
@@ -67,7 +67,7 @@ public class DeliveryPointRepoImpl implements DeliveryPointRepo {
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return deliveryPoint;

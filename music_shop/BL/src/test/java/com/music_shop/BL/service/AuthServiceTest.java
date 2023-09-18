@@ -70,7 +70,7 @@ public class AuthServiceTest {
         AuthService authService = new AuthServiceImpl(userRepo, cardRepo);
         when(userRepo.getUserByLogin(login)).thenReturn(null);
 
-        authService.registration(login, "Qwe123");
+        authService.registration(login, "Qwe123", User.Role.CUSTOMER);
         verify(userRepo).addUser(any(User.class));
     }
 
@@ -82,7 +82,7 @@ public class AuthServiceTest {
         when(userRepo.getUserByLogin(login)).thenReturn(user);
 
         assertThrows(OccupiedLoginException.class, () ->
-                authService.registration(login, "Qwe"));
+                authService.registration(login, "Qwe", User.Role.CUSTOMER));
     }
 
     @Test
@@ -93,6 +93,6 @@ public class AuthServiceTest {
         when(userRepo.getUserByLogin(login)).thenReturn(null);
 
         assertThrows(WeakPasswordException.class, () ->
-                authService.registration(login, "Qwe"));
+                authService.registration(login, "Qwe", User.Role.CUSTOMER));
     }
 }

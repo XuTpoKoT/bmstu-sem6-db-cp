@@ -9,10 +9,10 @@ public interface ProductRepo {
     Product getProductById(UUID id);
     List<Product> getAllProducts();
 
-    List<Product> getAllProductsByIds(List<UUID> ids);
-
     List<Product> getProductsBySkipAndLimit(int skip, int limit);
 
     int getCountProducts();
     void saveProduct(Product product);
+
+    void changeProductCnt(UUID productId, int cnt);
 }

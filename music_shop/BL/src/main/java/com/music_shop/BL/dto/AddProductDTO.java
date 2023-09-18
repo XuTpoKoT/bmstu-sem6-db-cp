@@ -1,4 +1,4 @@
-package com.music_shop.BL.model;
+package com.music_shop.BL.dto;
 
 import lombok.Builder;
 

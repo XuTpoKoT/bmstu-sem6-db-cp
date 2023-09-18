@@ -57,7 +57,7 @@ public class CardRepoImpl implements CardRepo {
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
         return card;
     }
@@ -71,7 +71,7 @@ public class CardRepoImpl implements CardRepo {
             jdbcTemplate.update(SQL_SET_ROLE_UNREGISTERED, new MapSqlParameterSource());
             jdbcTemplate.update(SQL_ADD_CARD, params);
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
     }
 
@@ -85,7 +85,7 @@ public class CardRepoImpl implements CardRepo {
             jdbcTemplate.update(SQL_SET_ROLE_CUSTOMER, new MapSqlParameterSource());
             jdbcTemplate.update(SQL_UPDATE_CARD, params);
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
     }
 }

@@ -72,7 +72,7 @@ GRANT INSERT ON public.Card TO unregistered;
 CREATE ROLE customer;
 GRANT SELECT ON public.User TO customer;
 GRANT SELECT ON public.Manufacturer TO customer;
-GRANT SELECT ON public.Product TO customer;
+GRANT SELECT, UPDATE ON public.Product TO customer;
 GRANT SELECT ON public.DeliveryPoint TO customer;
 GRANT SELECT, UPDATE ON public.Card TO customer;
 GRANT SELECT, INSERT ON public.Order_ TO customer;
@@ -85,7 +85,7 @@ REVOKE SELECT, INSERT ON public.Order_Product FROM customer;
 CREATE ROLE employee;
 GRANT SELECT ON public.User TO employee;
 GRANT SELECT ON public.Manufacturer TO employee;
-GRANT SELECT ON public.Product TO employee;
+GRANT SELECT, UPDATE ON public.Product TO employee;
 GRANT SELECT ON public.DeliveryPoint TO employee;
 GRANT SELECT, UPDATE ON public.Card TO employee;
 GRANT SELECT, INSERT ON public.Order_ TO employee;
@@ -94,3 +94,20 @@ GRANT SELECT, INSERT, update, Delete ON public.Cart TO employee;
 
 CREATE ROLE admin_;
 grant all privileges ON all tables in schema public to admin_;
+
+CREATE OR REPLACE FUNCTION change_storage_cnt()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    update public.product
+    SET storage_cnt = storage_cnt - new.cnt_products
+    where id = new.product_id;
+    RETURN new;
+END;
+$$ language plpgsql;
+
+CREATE TRIGGER decrease_storage_cnt_trigger
+    AFTER INSERT
+    ON public.order_product
+    FOR EACH ROW
+EXECUTE PROCEDURE change_storage_cnt();

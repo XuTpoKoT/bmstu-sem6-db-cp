@@ -39,15 +39,14 @@ public class ProductRepoImpl implements ProductRepo {
         ,m.id as manufacturer_id
         FROM public.product p
             join public.manufacturer m on m.id = p.manufacturer_id
+        ORDER BY pname
         LIMIT :limit
-        OFFSET :offset
+        OFFSET :offset        
     """;
-    private static final String SQL_GET_PRODUCTS_BY_IDS = """
-        SELECT p.id, p.name_ as pname, price, color, storage_cnt, img_ref, description, characteristics, m.name_ as mname
-        ,m.id as manufacturer_id
-        FROM public.product p
-            join public.manufacturer m on m.id = p.manufacturer_id
-        WHERE p.id in (:ids)
+    private static final String SQL_GET_UPDATE_PRODUCT_COUNT = """
+        UPDATE public.product
+        SET storage_cnt = :cnt
+        WHERE id = :id;
     """;
     private static final String SQL_SAVE_PRODUCT = """
         INSERT INTO public.product (name_, price, color, img_ref, description, characteristics, manufacturer_id)
@@ -84,7 +83,7 @@ public class ProductRepoImpl implements ProductRepo {
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return product;
@@ -100,24 +99,7 @@ public class ProductRepoImpl implements ProductRepo {
         } catch (IncorrectResultSizeDataAccessException e) {
             return products;
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
-        }
-
-        return products;
-    }
-
-    @Override
-    public List<Product> getAllProductsByIds(List<UUID> ids) {
-        MapSqlParameterSource params = new MapSqlParameterSource();
-        params.addValue("ids", ids);
-        List<Product> products = new ArrayList<>();
-        try {
-            jdbcTemplate.update(SQL_SET_ROLE_UNREGISTERED, new MapSqlParameterSource());
-            products = jdbcTemplate.query(SQL_GET_PRODUCTS_BY_IDS, params, productMapper).stream().toList();
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return products;
-        } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return products;
@@ -135,7 +117,7 @@ public class ProductRepoImpl implements ProductRepo {
         } catch (IncorrectResultSizeDataAccessException e) {
             return products;
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return products;
@@ -150,7 +132,7 @@ public class ProductRepoImpl implements ProductRepo {
             count = jdbcTemplate.queryForObject(
                     SQL_GET_COUNT_OF_PRODUCTS, params, Integer.class);
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return count;
@@ -158,7 +140,6 @@ public class ProductRepoImpl implements ProductRepo {
 
     @Override
     public void saveProduct(Product product) {
-        System.out.println("saveProduct called");
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("name_", product.getName());
         params.addValue("price", product.getPrice());
@@ -172,7 +153,21 @@ public class ProductRepoImpl implements ProductRepo {
             jdbcTemplate.update(SQL_SET_ROLE_ADMIN, new MapSqlParameterSource());
             jdbcTemplate.update(SQL_SAVE_PRODUCT, params);
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void changeProductCnt(UUID productId, int cnt) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", productId);
+        params.addValue("cnt", cnt);
+
+        try {
+            jdbcTemplate.update(SQL_SET_ROLE_ADMIN, new MapSqlParameterSource());
+            jdbcTemplate.update(SQL_GET_UPDATE_PRODUCT_COUNT, params);
+        } catch (DataAccessException e) {
+            throw new DBException(e.getMessage(), e);
         }
     }
 }

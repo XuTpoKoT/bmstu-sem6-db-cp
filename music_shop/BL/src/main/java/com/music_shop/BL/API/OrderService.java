@@ -1,6 +1,6 @@
 package com.music_shop.BL.API;
 
-import com.music_shop.BL.model.MakeOrderDTO;
+import com.music_shop.BL.dto.MakeOrderDTO;
 import com.music_shop.BL.model.Order;
 
 import java.util.List;

@@ -1,5 +1,6 @@
-package com.music_shop.BL.model;
+package com.music_shop.BL.dto;
 
+import com.music_shop.BL.model.Order;
 import lombok.Builder;
 
 import java.time.ZonedDateTime;

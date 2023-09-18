@@ -49,7 +49,7 @@ public class ManufacturerRepoImpl implements ManufacturerRepo {
         } catch (IncorrectResultSizeDataAccessException e) {
             return manufacturers;
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return manufacturers;
@@ -66,7 +66,7 @@ public class ManufacturerRepoImpl implements ManufacturerRepo {
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return manufacturer;

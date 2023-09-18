@@ -65,8 +65,10 @@ public class OrderRepoImpl implements OrderRepo {
         INSERT INTO public.order_product (order_id, product_id, price, cnt_products)
         VALUES (:orderId, :productId, :price, :cntProducts)
     """;
-    private static final String SQL_SET_ROLE_UNREGISTERED = """
-        SET ROLE unregistered;
+    private static final String SQL_GET_STORAGE_CNT_OF_PRODUCT = """
+        SELECT storage_cnt
+        FROM public.product p
+        WHERE p.id = :id 
     """;
     private static final String SQL_SET_ROLE_CUSTOMER = """
         SET ROLE customer;
@@ -87,7 +89,7 @@ public class OrderRepoImpl implements OrderRepo {
         this.orderDetailsMapper = orderDetailsMapper;
     }
 
-    @Transactional
+    @Transactional(timeout = 5)
     @Override
     public void addOrder(Order order) {
         MapSqlParameterSource params = new MapSqlParameterSource();
@@ -107,15 +109,26 @@ public class OrderRepoImpl implements OrderRepo {
             Map<UUID, Integer> productCountMap = order.getProductCountMap();
             Map<UUID, Integer> productPriceMap = order.getProductPriceMap();
             for (UUID productId : productCountMap.keySet()) {
+                MapSqlParameterSource cntParams = new MapSqlParameterSource();
+                cntParams.addValue("id", productId);
+                Integer curCnt = jdbcTemplate.queryForObject(SQL_GET_STORAGE_CNT_OF_PRODUCT, cntParams, Integer.class);
+                if (productCountMap.get(productId) > curCnt) {
+                    throw new DBException("Товара больше нет в наличии");
+                }
+
                 MapSqlParameterSource oDParams = new MapSqlParameterSource();
                 oDParams.addValue("orderId", order.getId());
                 oDParams.addValue("productId", productId);
                 oDParams.addValue("cntProducts", productCountMap.get(productId));
                 oDParams.addValue("price", productPriceMap.get(productId));
+                System.out.println("orderId " + order.getId());
+                System.out.println("productId " + productId);
+                System.out.println("cntProducts " + productCountMap.get(productId));
+                System.out.println("price " + productPriceMap.get(productId));
                 jdbcTemplate.update(SQL_ADD_ORDER_DETAILS, oDParams);
             }
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
     }
 
@@ -146,7 +159,7 @@ public class OrderRepoImpl implements OrderRepo {
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return orders;
@@ -176,7 +189,7 @@ public class OrderRepoImpl implements OrderRepo {
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return orders;
@@ -192,7 +205,7 @@ public class OrderRepoImpl implements OrderRepo {
             count = jdbcTemplate.queryForObject(
                     SQL_GET_COUNT_ORDERS_BY_CUSTOMER_LOGIN, params, Integer.class);
         } catch (Exception e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return count;
@@ -208,7 +221,7 @@ public class OrderRepoImpl implements OrderRepo {
             count = jdbcTemplate.queryForObject(
                     SQL_GET_COUNT_ORDERS_BY_EMPLOYEE_LOGIN, params, Integer.class);
         } catch (Exception e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return count;

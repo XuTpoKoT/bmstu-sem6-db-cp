@@ -1,29 +1,31 @@
 package com.music_shop.BL.log;
 
-public class LoggerImpl implements Logger{
-    private final org.apache.log4j.Logger log;
+import org.slf4j.LoggerFactory;
 
-    public LoggerImpl(String name) {
-        log = org.apache.log4j.Logger.getLogger(name);
+public class LoggerImpl implements com.music_shop.BL.log.Logger {
+    private final org.slf4j.Logger log;
+
+    public LoggerImpl(String className) {
+        log = LoggerFactory.getLogger(className);
     }
 
     @Override
     public void debug(Object message) {
-        log.debug(message);
+        log.debug((String) message);
     }
 
     @Override
     public void info(Object message) {
-        log.info(message);
+        log.info((String) message);
     }
 
     @Override
     public void error(Object message) {
-        log.error(message);
+        log.error((String) message);
     }
 
     @Override
     public void error(Object message, Throwable throwable) {
-        log.error(message, throwable);
+        log.error((String) message, throwable);
     }
 }

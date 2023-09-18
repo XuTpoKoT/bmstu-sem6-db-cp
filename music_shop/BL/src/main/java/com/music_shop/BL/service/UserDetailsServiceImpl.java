@@ -20,7 +20,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String login) {
-        System.out.println("load user " + login);
         User user = userRepository.getUserByLogin(login);
         return SecurityUser.fromUser(user);
     }

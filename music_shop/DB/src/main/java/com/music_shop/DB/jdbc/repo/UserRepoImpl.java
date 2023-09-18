@@ -46,7 +46,7 @@ public class UserRepoImpl implements UserRepo {
             jdbcTemplate.update(SQL_SET_ROLE_UNREGISTERED, new MapSqlParameterSource());
             jdbcTemplate.update(SQL_ADD_USER, params);
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return true;
@@ -64,7 +64,7 @@ public class UserRepoImpl implements UserRepo {
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         } catch (DataAccessException e) {
-            throw new DBException(e.getMessage());
+            throw new DBException(e.getMessage(), e);
         }
 
         return user;
