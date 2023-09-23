@@ -1,0 +1,211 @@
+\chapter{Конструкторский раздел}
+
+\section{Описание сущностей базы данных}
+
+Обозначения в таблицах: PK --- первичный ключ, FK --- внешний ключ, U --- поле должно быть уникальным, NN --- поле обязательно должно быть заполнено.
+
+Описание сущностей базы данных приведено в таблицах \ref{tbl:user}--\ref{tbl:cart}.
+
+\begin{table}[H]
+	\begin{center}
+		\caption{Таблица User}
+		\label{tbl:user}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			поле & тип данных & ограничения & значение \\
+			\hline
+			login & text  & PK & логин \\
+			\hline
+			password & text & NN & пароль \\
+			\hline
+			email & text & U & электронная почта \\
+			\hline
+			role & text & NN & роль \\
+			\hline
+		\end{tabular}
+	\end{center}	
+\end{table}
+
+\begin{table}[H]
+	\begin{center}
+		\caption{Таблица Card}
+		\label{tbl:card}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			поле & тип данных & ограничения & значение \\
+			\hline
+			customer\_login & text & FK, NN & логин заказчика \\
+			\hline
+			bonuses & text & NN & количество бонусов \\
+			\hline
+		\end{tabular}
+	\end{center}	
+\end{table}
+
+\begin{table}[H]
+	\begin{center}
+		\caption{Таблица Manufacturer}
+		\label{tbl:man}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			поле & тип данных & ограничения & значение \\
+			\hline
+			id & uuid  & PK & идентификатор \\
+			\hline
+			name & text & NN & имя \\
+			\hline
+		\end{tabular}
+	\end{center}	
+\end{table}
+
+\begin{table}[H]
+	\begin{center}
+		\caption{Таблица Product}
+		\label{tbl:prod}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			поле & тип данных & ограничения & значение \\
+			\hline
+			id & text  & PK & идентификатор \\
+			\hline
+			name & text & NN & название \\
+			\hline
+			price & int & NN & цена \\
+			\hline
+			description & text & & описание \\
+			\hline
+			color & text & & цвет \\
+			\hline
+			storage\_cnt & int & NN & количество на складе \\
+			\hline
+			img\_ref & text & & ссылка на изображение \\
+			\hline
+			manufacturer\_id & uuid & FK, NN & идентификатор производителя \\
+			\hline
+			characteristics & json & & характеристики \\
+			\hline
+		\end{tabular}
+	\end{center}	
+\end{table}
+\begin{table}[H]
+	\begin{center}
+		\caption{Таблица DeliveryPoint}
+		\label{tbl:dp}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			поле & тип данных & ограничения & значение \\
+			\hline
+			id & uuid  & PK & идентификатор \\
+			\hline
+			address & text & U, NN & адрес \\
+			\hline
+		\end{tabular}
+	\end{center}	
+\end{table}
+
+\begin{table}[H]
+	\begin{center}
+		\caption{Таблица Order}
+		\label{tbl:order}
+		\begin{tabular}{|c|c|m{30mm}|p{40mm}|}
+			\hline
+			поле & тип данных & ограничения & значение \\
+			\hline
+			id & uuid  & PK & идентификатор \\
+			\hline
+			customer\_login & text & FK & логин заказчика \\
+			\hline
+			employee\_login & text & FK & логин сотрудника \\
+			\hline
+			date & timestamp & NN & дата \\
+			\hline
+			status & text & NN & статус \\
+			\hline
+			delivery\_point\_id & uuid & NN & идентификатор точки доставки \\
+			\hline
+			initial\_cost & int & NN & начальная стоимость заказа \\
+			\hline
+			paid\_by\_bonuses & int & NN & оплачено бонусами \\
+			\hline
+		\end{tabular}
+	\end{center}	
+\end{table}
+
+\begin{table}[H]
+	\begin{center}
+		\caption{Таблица Order\_Product}
+		\label{tbl:op}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			поле & тип данных & ограничения & значение \\
+			\hline
+			order\_id & uuid  & FK, NN & идентификатор заказа \\
+			\hline
+			product\_id & uuid & FK, NN & идентификатор товара \\
+			\hline
+			price & int & NN & цена товара \\
+			\hline
+			cnt\_products & int & NN & количество товара \\
+			\hline
+		\end{tabular}
+	\end{center}	
+\end{table}
+
+\begin{table}[H]
+	\begin{center}
+		\caption{Таблица Cart}
+		\label{tbl:cart}
+		\begin{tabular}{|c|c|c|c|}
+			\hline
+			поле & тип данных & ограничения & значение \\
+			\hline
+			product\_id & uuid & FK, NN & идентификатор товара \\
+			\hline
+			login & text & FK, NN & логин заказчика \\
+			\hline
+			cnt\_products & int & NN & количество товара \\
+			\hline
+		\end{tabular}
+	\end{center}	
+\end{table}
+
+
+\section{Ролевая модель}
+В данном разделе описаны права, которыми обладают пользователи на уровне базы данных.
+
+Права неавторизованного пользователя:
+\begin{itemize}
+	\item выборка из таблиц User, Product, Manufacturer, DeliveryPoint, Card;
+	\item вставка в таблицы Card, User.
+\end{itemize}
+
+Права заказчика:
+\begin{itemize}
+	\item выборка из таблиц User, Product, Manufacturer, DeliveryPoint, Card, Order\_Product;
+	\item вставка в таблицы Order, Order\_Product, Cart.
+	\item обновление таблиц Card, Product, Cart.
+	\item удаление из таблицы Cart.
+\end{itemize}
+
+Права сотрудника:
+\begin{itemize}
+	\item выборка из таблиц User, Product, Manufacturer, DeliveryPoint, Card, Order\_Product;
+	\item вставка в таблицы Order, Order\_Product, Cart.
+	\item обновление таблиц Card, Product, Cart, Order.
+	\item удаление из таблицы Cart.
+\end{itemize}
+
+Администратор обладает доступом к выполнению любых операций с любыми таблицами.
+
+\section{Разработка триггера}
+При выполнении операции вставки записи в таблицу заказов, в системе автоматически уменьшается количество товара на складе.
+Для этого используется специальный триггер decrease\_storage\_cnt\_trigger. 
+Триггер decrease\_storage\_cnt\_trigger относится к категории AFTER (после выполнения операции) и выполняет UPDATE запрос для изменения соответствующей записи в таблице Product.
+
+\clearpage
+На рисунке \ref{img:trig} представлена схема алгоритма работы триггера.
+
+\imgHeight{150mm}{trig}{Схема алгоритма работы триггера}
+
+
+
