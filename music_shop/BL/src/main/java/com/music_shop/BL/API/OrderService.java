@@ -14,4 +14,8 @@ public interface OrderService {
 
     int getCountOrdersByCustomerLogin(String customerLogin);
     int getCountOrdersByEmployeeLogin(String employeeLogin);
+
+    Order getOrderById(UUID uuid);
+
+    void setOrderStatus(UUID id, Order.Status status);
 }

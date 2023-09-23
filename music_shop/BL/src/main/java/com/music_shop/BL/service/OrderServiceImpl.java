@@ -56,6 +56,18 @@ public class OrderServiceImpl implements OrderService {
         return orderRepo.getCountOrdersByEmployeeLogin(employeeLogin);
     }
 
+    @Override
+    public Order getOrderById(UUID id) {
+        log.info("getOrderById called with " + id);
+        return orderRepo.getOrderById(id);
+    }
+
+    @Override
+    public void setOrderStatus(UUID id, Order.Status status) {
+        log.info("setOrderStatus called with " + status);
+        orderRepo.setOrderStatus(id, status);
+    }
+
     @Transactional(timeout = 5)
     @Override
     public UUID makeOrder(MakeOrderDTO makeOrderDTO) {

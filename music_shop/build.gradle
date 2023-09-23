@@ -17,7 +17,6 @@ subprojects {
 
     configurations {
         compileOnly.extendsFrom annotationProcessor
-        all*.exclude module : 'spring-boot-starter-logging'
     }
 
     repositories {

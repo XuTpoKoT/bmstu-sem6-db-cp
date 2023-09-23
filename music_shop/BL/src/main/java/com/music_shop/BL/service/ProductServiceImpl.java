@@ -72,11 +72,11 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void changeProductCnt(UUID productId, int cnt) {
+        log.info("changeProductCnt called for " + productId);
         try {
             productRepo.changeProductCnt(productId, cnt);
         } catch (DBException e) {
             log.error("changeProductCnt failed", e);
-            throw e;
         }
 
     }

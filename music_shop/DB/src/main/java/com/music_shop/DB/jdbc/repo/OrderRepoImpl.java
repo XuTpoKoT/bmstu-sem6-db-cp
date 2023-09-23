@@ -47,6 +47,13 @@ public class OrderRepoImpl implements OrderRepo {
         LIMIT :limit
         OFFSET :offset
     """;
+    private static final String SQL_GET_ORDER_BY_ID = """
+        SELECT o.id as order_id, customer_login, employee_login, date_, status, initial_cost, paid_by_bonuses,
+            d.id as delivery_point_id, d.address
+        FROM public.order_ o
+            JOIN public.deliverypoint d on o.delivery_point_id = d.id
+        WHERE o.id = :id
+    """;
     private static final String SQL_GET_ORDERS_BY_EMPLOYEE_LOGIN = """
         SELECT o.id as order_id, customer_login, employee_login, date_, status, initial_cost, paid_by_bonuses,
             d.id as delivery_point_id, d.address
@@ -70,6 +77,11 @@ public class OrderRepoImpl implements OrderRepo {
         FROM public.product p
         WHERE p.id = :id 
     """;
+    private static final String SQL_GET_UPDATE_ORDER_STATUS = """
+        UPDATE public.order_
+        SET status = :status
+        WHERE id = :id;
+    """;
     private static final String SQL_SET_ROLE_CUSTOMER = """
         SET ROLE customer;
     """;
@@ -89,7 +101,7 @@ public class OrderRepoImpl implements OrderRepo {
         this.orderDetailsMapper = orderDetailsMapper;
     }
 
-    @Transactional(timeout = 5)
+    @Transactional
     @Override
     public void addOrder(Order order) {
         MapSqlParameterSource params = new MapSqlParameterSource();
@@ -225,5 +237,37 @@ public class OrderRepoImpl implements OrderRepo {
         }
 
         return count;
+    }
+
+    @Override
+    public Order getOrderById(UUID id) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", id);
+
+        Order order;
+        try {
+            jdbcTemplate.update(SQL_SET_ROLE_CUSTOMER, new MapSqlParameterSource());
+            order = jdbcTemplate.queryForObject(SQL_GET_ORDER_BY_ID, params, orderMapper);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        } catch (DataAccessException e) {
+            throw new DBException(e.getMessage(), e);
+        }
+
+        return order;
+    }
+
+    @Override
+    public void setOrderStatus(UUID orderId, Order.Status status) {
+        MapSqlParameterSource params = new MapSqlParameterSource();
+        params.addValue("id", orderId);
+        params.addValue("status", status.name());
+
+        try {
+            jdbcTemplate.update(SQL_SET_ROLE_EMPLOYEE, new MapSqlParameterSource());
+            jdbcTemplate.update(SQL_GET_UPDATE_ORDER_STATUS, params);
+        } catch (DataAccessException e) {
+            throw new DBException(e.getMessage(), e);
+        }
     }
 }

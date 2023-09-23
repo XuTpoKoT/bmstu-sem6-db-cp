@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" th:href="@{/styles/main.css}" />
+</head>
+<body xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6">
+  <th:block th:include="/_header"></th:block>
+  <th:block th:include="/_menu"></th:block>
+
+  <div sec:authorize="hasAnyAuthority('ADMIN', 'EMPLOYEE')">
+    <p th:text="'Номер заказа: ' + ${order.getId()}"></p>
+    <p th:text="'Дата: ' + ${#temporals.format(order.getDate(),'dd-MM-yyyy HH:mm')}"></p>
+    <p th:text="'Точка доставки: ' + ${order.getDeliveryPoint().getAddress()}"></p>
+    <p th:if="${order.getCustomerLogin()!=null}" th:text="'Имя Заказчика: ' + ${order.getCustomerLogin()}"></p>
+    <p th:text="'Стоимость: ' + ${order.getInitialCost()}"></p>
+    <p th:text="'Оплачено бонусами: ' + ${order.getPaidByBonuses()}"></p>
+
+    <form th:action="@{/orders/{id}(id=${order.getId()})}" th:method="patch">
+      <select th:name="orderStatus" class="summary-delivery-selection">
+        <option th:selected="${order.getStatus().name()=='formed'}" th:value="formed" th:text="оформлен"></option>
+        <option th:selected="${order.getStatus().name()=='built'}" th:value="built" th:text="Собран"></option>
+        <option th:selected="${order.getStatus().name()=='delivered'}" th:value="delivered" th:text="Доставлен"></option>
+        <option th:selected="${order.getStatus().name()=='received'}" th:value="received" th:text="Получен"></option>
+      </select>
+      <button class="btn btn-lg btn-primary btn-block" type="submit">Изменить статус</button>
+    </form>
+
+  </div>
+</body>
+</html>

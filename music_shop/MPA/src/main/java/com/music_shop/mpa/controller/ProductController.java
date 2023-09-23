@@ -76,9 +76,13 @@ public class ProductController {
             @RequestParam(name = "productId") String productId,
             @RequestParam(name = "storageCnt") Integer productCnt) {
         log.debug("changeProductCnt id " + productCnt);
-        log.debug("uri " + request.getRequestURI());
+        log.info("uri " + request.getRequestURI());
+        log.info("I am terminator");
+        log.debug("I am terminator too");
 
         productService.changeProductCnt(UUID.fromString(productId), productCnt);
-        return "redirect:" + request.getRequestURI();
+        String str = "redirect:/products/" + productId;
+        log.info(str);
+        return str;
     }
 }

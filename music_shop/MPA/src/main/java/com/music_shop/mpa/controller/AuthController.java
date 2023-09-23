@@ -24,14 +24,12 @@ public class AuthController {
     }
 
     @GetMapping("/login")
-    public String getLoginPage(Model model) {
-        System.out.println("getLoginPage");
+    public String getLoginPage() {
         return "login";
     }
 
     @GetMapping("/registration/customer")
     public String getRegistrationPage() {
-        System.out.println("getRegPage");
         return "registration";
     }
 
@@ -50,15 +48,13 @@ public class AuthController {
 
     @GetMapping("/registration/employee")
     public String getRegistrationEmployeePage() {
-        System.out.println("getRegistrationEmployeePage");
         return "registrationEmployee";
     }
 
     @PostMapping("/registration/employee")
     public String registrationEmployee(@RequestParam(name = "username") String login,
-                               @RequestParam(name = "password") String password,
-                               Model model) {
-        System.out.println("registrationEmployee");
+                                       @RequestParam(name = "password") String password,
+                                       Model model) {
         try {
             authService.registration(login, password, User.Role.EMPLOYEE);
         } catch (Exception e) {

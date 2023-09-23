@@ -15,10 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.ZoneId;
@@ -113,5 +110,18 @@ public class OrderController {
         }
 
         return "orders";
+    }
+
+    @GetMapping("/{id}")
+    public String getOrdersByLogin(@PathVariable String id, Model model) {
+        Order order = orderService.getOrderById(UUID.fromString(id));
+        model.addAttribute("order", order);
+        return "order";
+    }
+    @PatchMapping("/{id}")
+    public String setOrderStatus(@PathVariable String id,
+                                 @RequestParam String orderStatus) {
+        orderService.setOrderStatus(UUID.fromString(id), Order.Status.valueOf(orderStatus));
+        return "redirect:/orders/" + id;
     }
 }

@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.Card (
 
 CREATE TABLE IF NOT EXISTS public.Manufacturer (
     id           uuid PRIMARY KEY DEFAULT gen_random_uuid()
-    , name_      text NOT NULL
+    , name_      text UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS public.Product (
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS public.Product (
 
 CREATE TABLE IF NOT EXISTS public.DeliveryPoint (
     id            uuid PRIMARY KEY DEFAULT gen_random_uuid()
-    , address 	  text NOT NULL
+    , address 	  text UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS public.Order_(
@@ -88,7 +88,7 @@ GRANT SELECT ON public.Manufacturer TO employee;
 GRANT SELECT, UPDATE ON public.Product TO employee;
 GRANT SELECT ON public.DeliveryPoint TO employee;
 GRANT SELECT, UPDATE ON public.Card TO employee;
-GRANT SELECT, INSERT ON public.Order_ TO employee;
+GRANT SELECT, INSERT, UPDATE ON public.Order_ TO employee;
 GRANT SELECT, INSERT ON public.Order_Product TO employee;
 GRANT SELECT, INSERT, update, Delete ON public.Cart TO employee;
 

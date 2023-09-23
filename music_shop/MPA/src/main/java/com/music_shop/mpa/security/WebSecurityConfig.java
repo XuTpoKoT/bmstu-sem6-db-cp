@@ -21,13 +21,13 @@ public class WebSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/home", "/products/*",
-                                "/auth/registration",  "/styles/*", "/js/*")
+                                "/auth/registration/customer",  "/styles/*", "/js/*")
                             .permitAll()
                         .requestMatchers("/orders", "/cart","/user")
                             .hasAnyAuthority("CUSTOMER", "EMPLOYEE")
-                        .requestMatchers("/newproduct")
+                        .requestMatchers("/newproduct", "/auth/registration/employee")
                             .hasAnyAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH, "/product")
+                        .requestMatchers(HttpMethod.PATCH, "/product", "/orders/*")
                             .hasAnyAuthority("ADMIN", "EMPLOYEE")
                         .anyRequest()
                         .authenticated()
