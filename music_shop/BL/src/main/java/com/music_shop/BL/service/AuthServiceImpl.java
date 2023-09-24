@@ -51,7 +51,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public void registration(String login, String password, User.Role role) throws RuntimeException {
+    public void registration(String login, String password, User.Role role, String firstName, String lastName,
+                             String email)
+            throws RuntimeException {
         log.info("registration called with " + login);
         System.out.println(password);
         User user = userRepo.getUserByLogin(login);
@@ -67,8 +69,8 @@ public class AuthServiceImpl implements AuthService {
             throw e;
         }
         byte[] encodedPassword = Base64.getEncoder().encode(password.getBytes());
-        userRepo.addUser(User.builder().login(login).password(encodedPassword).
-                role(role).build());
+        userRepo.addUser(User.builder().login(login).password(encodedPassword).firstName(firstName).lastName(lastName).
+                role(role).email(email).build());
         cardRepo.createCard(login);
     }
 

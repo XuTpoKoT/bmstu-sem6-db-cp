@@ -36,9 +36,12 @@ public class AuthController {
     @PostMapping("/registration/customer")
     public String registration(@RequestParam(name = "username") String login,
                                @RequestParam(name = "password") String password,
+                               @RequestParam(name = "firstName") String firstName,
+                               @RequestParam(name = "lastName") String lastName,
+                               @RequestParam(name = "email") String email,
                                 Model model) {
         try {
-            authService.registration(login, password, User.Role.CUSTOMER);
+            authService.registration(login, password, User.Role.CUSTOMER, firstName, lastName, email);
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "/registration";
@@ -56,7 +59,7 @@ public class AuthController {
                                        @RequestParam(name = "password") String password,
                                        Model model) {
         try {
-            authService.registration(login, password, User.Role.EMPLOYEE);
+            authService.registration(login, password, User.Role.EMPLOYEE, null, null, null);
         } catch (Exception e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "registrationEmployee";

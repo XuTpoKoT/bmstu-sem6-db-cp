@@ -14,8 +14,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserRepoImpl implements UserRepo {
     private static final String SQL_ADD_USER = """
-        INSERT INTO public.user (login, password, role_) 
-        VALUES (:login, :password, :role) 
+        INSERT INTO public.user (login, password, role_, first_name, last_name, email) 
+        VALUES (:login, :password, :role, :first_name, :last_name, :email) 
     """;
     private static final String SQL_GET_USER_BY_LOGIN = """
         SELECT login, convert_from(password, 'UTF-8') as password, role_, first_name, last_name, email, birth_date
@@ -41,6 +41,9 @@ public class UserRepoImpl implements UserRepo {
         params.addValue("login", user.getLogin());
         params.addValue("password", user.getPassword());
         params.addValue("role", user.getRole().toString());
+        params.addValue("first_name", user.getFirstName());
+        params.addValue("last_name", user.getLastName());
+        params.addValue("email", user.getEmail());
 
         try {
             jdbcTemplate.update(SQL_SET_ROLE_UNREGISTERED, new MapSqlParameterSource());

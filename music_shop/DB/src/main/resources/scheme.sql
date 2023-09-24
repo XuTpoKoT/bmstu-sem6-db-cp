@@ -94,20 +94,3 @@ GRANT SELECT, INSERT, update, Delete ON public.Cart TO employee;
 
 CREATE ROLE admin_;
 grant all privileges ON all tables in schema public to admin_;
-
-CREATE OR REPLACE FUNCTION change_storage_cnt()
-    RETURNS TRIGGER AS
-$$
-BEGIN
-    update public.product
-    SET storage_cnt = storage_cnt - new.cnt_products
-    where id = new.product_id;
-    RETURN new;
-END;
-$$ language plpgsql;
-
-CREATE TRIGGER decrease_storage_cnt_trigger
-    AFTER INSERT
-    ON public.order_product
-    FOR EACH ROW
-EXECUTE PROCEDURE change_storage_cnt();

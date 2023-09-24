@@ -54,6 +54,9 @@ out/
 *.blg
 *.bbl
 *.toc
+*.bcf
+*.run*
+
 *.synctex*
 
 

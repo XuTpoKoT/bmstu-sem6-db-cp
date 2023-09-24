@@ -45,9 +45,13 @@ def genProducts():
 
         def genDescription(category):
             if category == 'Гитары':
-                return 'Крутая гитара'
+                return 'Гитара проходит предпродажный осмотр, что гарантирует получение качественного инструмента. \
+            В комплекте с гитарой прилагается фирменный утепленный чехол, который надежно защищает её.'
             elif category == 'Синтезаторы':
-                return 'Крутой синтезатор'
+                return 'Данный инструмент - хороший выбор для начинающих музыкантов и любителей, сочетает в себе бюджетность\
+                      инструмента начального уровня с функционалом устройств более высокого класса. \
+                        Синтезатор имеет большое количество тембров и стилей, широкий набор функций, \
+                            а также необходимые разъемы, включая микрофонный вход.'
         
         def genGuitarCharacteristics(fieldValues):
             characteristics = {}
@@ -56,7 +60,7 @@ def genProducts():
             characteristics["Кол-во ладов"] = choice([15, 18, 24])
             ch = json.dumps(characteristics, ensure_ascii=False)
             fieldValues['characteristics'] = ch
-            
+            fieldValues['img_ref'] = "https://kombik.com/resources/img/000/001/822/img_182276.jpg"            
 
         def genSynthesizerCharacteristics(fieldValues):
             characteristics = {}
@@ -65,6 +69,7 @@ def genProducts():
             characteristics['Кол-во тембров'] = randint(100, 400)
             ch = json.dumps(characteristics, ensure_ascii=False)
             fieldValues['characteristics'] = ch
+            fieldValues['img_ref'] = "https://muzakkord.ru/wa-data/public/shop/products/87/96/489687/images/136026/136026.750x0.jpg"
 
         manufacturer = choice(manufacturers)
         category = choice(['Гитары', 'Синтезаторы'])
@@ -72,8 +77,8 @@ def genProducts():
         fieldValues['id'] = uuid4()
         fieldValues['name_'] = genProductName(manufacturer['name_'])
         fieldValues['description'] = genDescription(category)
-        fieldValues['price'] = randint(5000, 25000)
-        # fieldValues['storage_cnt'] = randint(1, 20)
+        fieldValues['price'] = randint(5000, 90000) // 500 * 500
+        fieldValues['storage_cnt'] = randint(1, 20)
         fieldValues['color'] = choice(colors)
         fieldValues['manufacturer_id'] = manufacturer['id']        
 
@@ -82,7 +87,7 @@ def genProducts():
         elif category == 'Синтезаторы':
             genSynthesizerCharacteristics(fieldValues)            
 
-    cntRecords = 100
+    cntRecords = 700
     manufacturers = readIdsNamesCsv('manufacturers.csv')
     colors = [line.strip() for line in open("txt/colors.txt", "r")]
     materials = [line.strip() for line in open("txt/materials.txt", "r")]
@@ -90,8 +95,8 @@ def genProducts():
     for m in manufacturers:
         print(m)
 
-    with open('ProductModel.csv', 'w', newline='') as csvfile:
-        fieldNames = ['id', 'name_', 'price', 'description', 'color', 'manufacturer_id', 'characteristics']
+    with open('products_700.csv', 'w', newline='') as csvfile:
+        fieldNames = ['id', 'name_', 'price', 'description', 'color', 'img_ref', 'storage_cnt', 'manufacturer_id', 'characteristics']
         writer = csv.DictWriter(csvfile, fieldnames=fieldNames)
         writer.writeheader()
 
@@ -134,7 +139,7 @@ def genOrder_ProductModel():
 
 if __name__ == "__main__":
     fake = Faker()
-    genManufactures()
+    # genManufactures()
     genProducts()
     # genOrders()
     # genOrder_ProductModel()

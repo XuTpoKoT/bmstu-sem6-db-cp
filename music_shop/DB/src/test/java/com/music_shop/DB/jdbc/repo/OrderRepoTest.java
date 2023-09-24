@@ -59,7 +59,7 @@ public class OrderRepoTest {
                 "Петровский проспект, 24");
         Map<String, String> characteristics = new HashMap<>();
         characteristics.put("cnt_frets", "24");
-        Product product = Product.builder().id(productId).name("TAKAMINE-FG50").price(35000)
+        Product product = Product.builder().id(productId).name("TAKAMINE-FG50").price(35000).storageCnt(10)
                 .characteristics(characteristics).build();
         Map<UUID, Integer> productCountMap = new HashMap<>();
         productCountMap.put(product.getId(), 2);

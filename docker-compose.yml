@@ -19,7 +19,7 @@ services:
     build:
       context: .
       dockerfile: "DockerfileDB"
-    container_name: mypostgres
+    container_name: db_postgres
     environment:
       POSTGRES_DB: "musicshop_db"
       POSTGRES_USER: "postgres"

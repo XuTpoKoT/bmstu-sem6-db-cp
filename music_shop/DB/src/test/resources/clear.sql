@@ -18,6 +18,10 @@ REASSIGN OWNED BY employee TO postgres;
 DROP OWNED BY employee;
 drop role if exists employee;
 
+REASSIGN OWNED BY admin_ TO postgres;
+DROP OWNED BY admin_;
+drop role if exists admin_;
+
 
 
 
