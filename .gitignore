@@ -44,3 +44,16 @@ out/
 *.csv
 .log
 .mylog
+
+## tex
+*.aux
+*.out
+*.bst
+*.gz
+*.log
+*.blg
+*.bbl
+*.toc
+*.synctex*
+
+
